@@ -1,4 +1,4 @@
-package com.bootcamp.smarthome.exсeption;
+package com.bootcamp.smarthome.exception;
 
 public class InvalidValueException extends HomeAutomationException {
 
@@ -7,6 +7,8 @@ public class InvalidValueException extends HomeAutomationException {
     private final String constraint;
 
     public InvalidValueException(String field, Object value, String constraint) {
+        super("Invalid value for '" + field + "': " + value + ". " + constraint);
+
         this.field = field;
         this.value = value;
         this.constraint = constraint;

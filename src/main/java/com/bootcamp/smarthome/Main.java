@@ -5,6 +5,7 @@ import com.bootcamp.smarthome.device.Device;
 import com.bootcamp.smarthome.device.SmartLight;
 import com.bootcamp.smarthome.device.SmartLock;
 import com.bootcamp.smarthome.device.SmartThermostat;
+import com.bootcamp.smarthome.exception.HomeAutomationException;
 
 /**
  * Entry point for the Smart Home Controller demo.
@@ -14,7 +15,7 @@ import com.bootcamp.smarthome.device.SmartThermostat;
  */
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws HomeAutomationException {
 
         HomeController controller = new HomeController();
 
@@ -43,7 +44,7 @@ public class Main {
         // This test calls setTemperature() directly to isolate temperature validation.
         Device found = controller.findDevice("THERMO_01");
         SmartThermostat mainThermostat = (SmartThermostat) found;
-        mainThermostat.setTemperature(99.0);
+        mainThermostat.setTemperature(34.0);
 
         System.out.println("\n=== Scenario 4: Offline device ===");
         // LIGHT_03 is offline — command should be skipped with a warning

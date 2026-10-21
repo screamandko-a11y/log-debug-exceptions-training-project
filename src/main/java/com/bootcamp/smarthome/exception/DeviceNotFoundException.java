@@ -1,4 +1,4 @@
-package com.bootcamp.smarthome.exсeption;
+package com.bootcamp.smarthome.exception;
 
 public class DeviceNotFoundException extends  RuntimeException {
 }

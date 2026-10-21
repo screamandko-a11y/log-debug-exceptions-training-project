@@ -1,6 +1,8 @@
 package com.bootcamp.smarthome.controller;
 
 import com.bootcamp.smarthome.device.Device;
+import com.bootcamp.smarthome.exception.HomeAutomationException;
+import com.bootcamp.smarthome.exception.InvalidValueException;
 
 /**
  * Central hub that manages all registered smart devices.
@@ -30,7 +32,7 @@ public class HomeController {
         if (deviceCount >= MAX_DEVICES) {
             throw new IllegalStateException(
                     "Cannot add device '" + device.getDeviceId() +
-                    "': controller is at maximum capacity (" + MAX_DEVICES + ").");
+                            "': controller is at maximum capacity (" + MAX_DEVICES + ").");
         }
         devices[deviceCount] = device;
         deviceCount++;
@@ -43,7 +45,7 @@ public class HomeController {
 
     /**
      * Finds a registered device by its ID.
-     *
+     * <p>
      * Returns {@code null} when no matching device is found.
      */
     public Device findDevice(String deviceId) {
@@ -62,15 +64,18 @@ public class HomeController {
     /**
      * Parses {@code fullCommand}, resolves the target device, and delegates
      * execution to {@link Device#executeCommand(String)}.
-     *
+     * <p>
      * Full command format: {@code "DEVICE_ID ACTION [VALUE]"}
      * Example: {@code "LIGHT_01 SET_BRIGHTNESS 75"}
      *
      * @param fullCommand the full command string
      */
-    public void sendCommand(String fullCommand) {
-        String deviceId = CommandParser.extractDeviceId(fullCommand);
-        String command  = CommandParser.extractCommand(fullCommand);
+    public void sendCommand(String fullCommand) throws HomeAutomationException {
+        String deviceId = "unknown";
+
+        try {
+            deviceId = CommandParser.extractDeviceId(fullCommand);
+            String command = CommandParser.extractCommand(fullCommand);
 
         Device device = findDevice(deviceId);
 
@@ -83,9 +88,17 @@ public class HomeController {
             System.out.println("WARNING: Device '" + deviceId + "' is offline — command skipped.");
             return;
         }
-
         device.executeCommand(command);
     }
+        catch (HomeAutomationException e) {
+
+        throw new HomeAutomationException(
+                "Command '" + fullCommand + "' failed for device '" + deviceId + "'", e);
+
+    } finally {
+        System.out.println("Command processing ended for device [" + deviceId + "]");
+    }
+}
 
     // -------------------------------------------------------------------------
     // Utility
