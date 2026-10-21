@@ -31,6 +31,8 @@ public class SmartLock extends Device {
      */
     public void validatePin(String pin) throws InvalidCommandException {
 
+        // get InvalidCommandException() if the password 'null'
+
         if (pin == null || !pin.equals(storedPin)) {
             logger.error(
                     "SECURITY ALERT: Failed unlock attempt for device '{}'",

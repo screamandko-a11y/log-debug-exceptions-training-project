@@ -41,10 +41,16 @@ public class Main {
         controller.sendCommand("LIGHT_01 SET_BRIGHTNESS 80");
 
         System.out.println("\n=== Scenario 3: Invalid temperature ===");
-        // This test calls setTemperature() directly to isolate temperature validation.
-        Device found = controller.findDevice("THERMO_01");
-        SmartThermostat mainThermostat = (SmartThermostat) found;
-        mainThermostat.setTemperature(34.0);
+        // сatch the exception and let the program continue
+        try {
+            // This test calls setTemperature() directly to isolate temperature validation.
+            Device found = controller.findDevice("THERMO_01");
+            SmartThermostat mainThermostat = (SmartThermostat) found;
+            mainThermostat.setTemperature(99.0);
+        } catch (HomeAutomationException e) {
+        e.printStackTrace();
+    }
+
 
         System.out.println("\n=== Scenario 4: Offline device ===");
         // LIGHT_03 is offline — command should be skipped with a warning
@@ -58,7 +64,14 @@ public class Main {
         frontDoor.validatePin("4321"); // should print "Front Door Lock unlocked successfully."
 
         System.out.println("\n=== Scenario 6: Unlock with null PIN ===");
-        controller.sendCommand("LOCK_02 UNLOCK");
+
+        // сatch the exception and let the program continue
+
+        try {
+            controller.sendCommand("LOCK_02 UNLOCK");
+        } catch (HomeAutomationException e) {
+            e.printStackTrace();
+        }
 
         System.out.println("\n=== Scenario 7: Find non-existent device ===");
         controller.sendCommand("SENSOR_99 TURN_ON");

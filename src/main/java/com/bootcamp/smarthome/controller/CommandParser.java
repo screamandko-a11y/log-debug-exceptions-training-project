@@ -34,8 +34,11 @@ public class CommandParser {
      *   "LIGHT_01 SET_BRIGHTNESS 75"  → should return "SET_BRIGHTNESS 75"
      *   "LIGHT_01 TURN_ON"            → should return "TURN_ON"
      */
+
+    // extractCommand fixed and the SET_BRIGHTNESS command doing well
     public static String extractCommand(String fullCommand) {
-        String[] parts = fullCommand.split(" ");
+
+        String[] parts = fullCommand.split(" " , 2 );
         return parts[1];
     }
 }
