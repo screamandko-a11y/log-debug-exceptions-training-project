@@ -2,7 +2,8 @@ package com.bootcamp.smarthome.controller;
 
 import com.bootcamp.smarthome.device.Device;
 import com.bootcamp.smarthome.exception.HomeAutomationException;
-import com.bootcamp.smarthome.exception.InvalidValueException;
+import com.bootcamp.smarthome.exception.DeviceOfflineException;
+import com.bootcamp.smarthome.exception.DeviceNotFoundException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,7 +85,7 @@ public class HomeController {
             deviceId = CommandParser.extractDeviceId(fullCommand);
             String command = CommandParser.extractCommand(fullCommand);
 
-            // DEBUG — get the message
+            // DEBUG - log incoming command
             logger.debug(
                     "Received command '{}' for device '{}'",
                     fullCommand, deviceId
@@ -92,46 +93,43 @@ public class HomeController {
 
             Device device = findDevice(deviceId);
 
+
             if (device == null) {
-                logger.warn("Device '{}' not found", deviceId);
-                return;
+                throw new DeviceNotFoundException(deviceId);
             }
 
             if (!device.isOnline()) {
-                // WARN — device is offline
-                logger.warn(
-                        "Device '{}' is offline — command skipped",
-                        deviceId
-                );
-                return;
+                throw new DeviceOfflineException(deviceId);
             }
 
             device.executeCommand(command);
 
-            // INFO — command successfully for device
+            // INFO - command successfully for device
             logger.info(
-                    "Command '{}' executed successfully for device '{}'",
-                    fullCommand, deviceId
-            );
+                    "Command '{}' executed successfully for device '{}'", fullCommand, deviceId);
+
+            // BONUS TASK 2
+            // logs the exception in the log
+            // create and throw exception
+            // sonarQube indicates that it is incorrect, I decided to keep the README requirement
+        } catch (DeviceNotFoundException e) {
+            logger.warn("Command skipped: {}", e.getMessage());
+
+        } catch (DeviceOfflineException e) {
+            logger.warn("Command skipped: {}", e.getMessage());
 
         } catch (HomeAutomationException e) {
-
-            // ERROR — something went wrong
+            // ERROR - log error message
             logger.error(
                     "Command '{}' failed for device '{}'",
-                    fullCommand, deviceId, e
-            );
+                    fullCommand, deviceId, e);
 
             throw new HomeAutomationException(
                     "Command '" + fullCommand +
-                            "' failed for device '" + deviceId + "'",
-                    e
-            );
+                            "' failed for device '" + deviceId + "'", e);
 
         } finally {
-            System.out.println(
-                    "Command processing ended for device [" + deviceId + "]"
-            );
+            System.out.println("Command processing ended for device [" + deviceId + "]");
         }
     }
 

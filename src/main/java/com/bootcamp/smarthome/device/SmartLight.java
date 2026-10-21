@@ -1,5 +1,6 @@
 package com.bootcamp.smarthome.device;
 
+import com.bootcamp.smarthome.exception.InvalidCommandException;
 import com.bootcamp.smarthome.exception.InvalidValueException;
 
 /**
@@ -10,7 +11,9 @@ import com.bootcamp.smarthome.exception.InvalidValueException;
  */
 public class SmartLight extends Device {
 
-    /** Brightness level. Valid range: 0–100 inclusive. */
+    /**
+     * Brightness level. Valid range: 0–100 inclusive.
+     */
     private int brightness;
 
     public SmartLight(String deviceId, String name, boolean isOnline) {
@@ -24,7 +27,7 @@ public class SmartLight extends Device {
 
     /**
      * Sets the brightness of this light.
-     *
+     * <p>
      * Valid range: 0–100 inclusive.
      */
     public void setBrightness(int level) throws InvalidValueException {
@@ -37,7 +40,7 @@ public class SmartLight extends Device {
     }
 
     @Override
-    public void executeCommand(String command) throws InvalidValueException {
+    public void executeCommand(String command) throws InvalidValueException, InvalidCommandException {
         if (command.startsWith("SET_BRIGHTNESS")) {
             String[] parts = command.split(" ");
             int level = (parts.length > 1) ? Integer.parseInt(parts[1]) : 50;
@@ -47,20 +50,24 @@ public class SmartLight extends Device {
         } else if (command.equals("TURN_OFF")) {
             turnOff();
         } else {
-            System.out.println("Unknown command for SmartLight '" + getName() + "': " + command);
+            // added InvalidCommandException to handle unknown device commands
+            throw new InvalidCommandException(
+                    "Unknown command for SmartLight '" + getName() + "': " + command);
         }
     }
 
-    // -------------------------------------------------------------------------
-    // Getters
-    // -------------------------------------------------------------------------
 
-    public int getBrightness() {
-        return brightness;
-    }
+            // -------------------------------------------------------------------------
+            // Getters
+            // -------------------------------------------------------------------------
 
-    @Override
-    public String toString() {
-        return super.toString() + String.format(" | brightness=%3d%%", brightness);
-    }
-}
+            public int getBrightness () {
+                return brightness;
+            }
+
+            @Override
+            public String toString () {
+                return super.toString() + String.format(" | brightness=%3d%%", brightness);
+            }
+        }
+
